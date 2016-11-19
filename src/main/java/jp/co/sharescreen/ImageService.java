@@ -5,7 +5,6 @@ import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.io.File;
 
 import javax.imageio.ImageIO;
 
@@ -28,7 +27,7 @@ public class ImageService {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ImageIO.write(image, "png", out);
 
-    ImageIO.write(image, "png", new File("/home/daisuke/screenshot.png"));
+    //    ImageIO.write(image, "png", new File("/home/daisuke/screenshot.png"));
 
     return out.toByteArray();
   }

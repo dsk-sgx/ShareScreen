@@ -6,20 +6,28 @@
 	$(function() {
 		var ws = new WebSocket("ws://localhost:18080/screens");
 		ws.onopen = function() {
-			ws.send('start');
 		};
 		ws.onclose = function() {
 		};
-		ws.onmessage = function(message) {
-			$("#result").append(message.data).append("<br>");
+		ws.onmessage = function(response) {
+			var data = new Uint8Array(response);
+			var url = URL.createObjectURL(new Blob([response], {type : "image/png"}));
+			var image = new Image();
+			image.onload = function() {
+				URL.revokeObjectURL(url);
+			};
+			console.log(response);
+			image.src = url;
+			$("#images").append(image);
 		};
 		ws.onerror = function(event) {
-			alert("接続に失敗しました。");
+			console.log("エラーが発生しました:" + event);
+			alert("エラーが発生しました:" + event);
 		};
 	});
 </script>
 </head>
 <body>
-	<div id="result"></div>
+	<div id="images"></div>
 </body>
 </html>

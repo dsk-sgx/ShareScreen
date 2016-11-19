@@ -5,8 +5,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import jp.co.sharescreen.handler.WebSocketHandler;
-
 @Component
 public class ApplicationConfig implements WebSocketConfigurer {
 

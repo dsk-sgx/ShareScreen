@@ -27,6 +27,7 @@ public class WebSocketHandler extends BinaryWebSocketHandler {
   @Override
   public void afterConnectionEstablished(WebSocketSession session) throws Exception {
     sessions.put(session.getId(), session);
+    sendImage();
   }
 
   /**

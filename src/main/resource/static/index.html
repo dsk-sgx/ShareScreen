@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script type="text/javascript" src="./jquery.js"></script>
 <script type="text/javascript">
 	$(function() {
@@ -10,17 +11,18 @@
 		ws.onclose = function() {
 		};
 		ws.onmessage = function(response) {
-			var data = new Uint8Array(response);
-			var url = URL.createObjectURL(new Blob([response], {type : "image/png"}));
+			var url = URL.createObjectURL(new Blob([response.data], {
+				type : "image/png"
+			}));
 			var image = new Image();
 			image.onload = function() {
 				URL.revokeObjectURL(url);
 			};
-			console.log(response);
 			image.src = url;
-			$("#images").append(image);
+			$("#image").html(image);
 		};
 		ws.onerror = function(event) {
+			console.log(event);
 			console.log("エラーが発生しました:" + event);
 			alert("エラーが発生しました:" + event);
 		};
@@ -28,6 +30,6 @@
 </script>
 </head>
 <body>
-	<div id="images"></div>
+	<div id="image"></div>
 </body>
 </html>

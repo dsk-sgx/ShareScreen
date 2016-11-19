@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="./jquery.js"></script>
+<script type="text/javascript">
+	$(function() {
+		var ws = new WebSocket("ws://localhost:18080/screens");
+		ws.onopen = function() {
+			ws.send('start');
+		};
+		ws.onclose = function() {
+		};
+		ws.onmessage = function(message) {
+			$("#result").append(message.data).append("<br>");
+		};
+		ws.onerror = function(event) {
+			alert("接続に失敗しました。");
+		};
+	});
+</script>
+</head>
+<body>
+	<div id="result"></div>
+</body>
+</html>

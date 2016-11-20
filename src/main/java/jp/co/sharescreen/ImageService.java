@@ -23,12 +23,8 @@ public class ImageService {
     Robot robot = new Robot();
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     BufferedImage image = robot.createScreenCapture(new Rectangle(0, 0, screenSize.width, screenSize.height));
-
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ImageIO.write(image, "png", out);
-
-    //    ImageIO.write(image, "png", new File("/home/daisuke/screenshot.png"));
-
     return out.toByteArray();
   }
 }

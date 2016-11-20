@@ -2,6 +2,7 @@ package jp.co.sharescreen;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 @Service
 public class WebSocketHandler extends BinaryWebSocketHandler {
 
-  private final static Map<String, WebSocketSession> sessions = new ConcurrentHashMap<String, WebSocketSession>();
+  private static final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<String, WebSocketSession>();
 
   @Autowired
   ImageService imageService;
@@ -49,8 +50,10 @@ public class WebSocketHandler extends BinaryWebSocketHandler {
    */
   @Scheduled(fixedDelayString = "${screenshot.interval}")
   public void sendImage() throws Exception {
+    byte[] image = imageService.screenShot();
+    BinaryMessage message = new BinaryMessage(image);
     for (Map.Entry<String, WebSocketSession> e : sessions.entrySet()) {
-      e.getValue().sendMessage(new BinaryMessage(imageService.screenShot()));
+      e.getValue().sendMessage(message);
     }
   }
 }

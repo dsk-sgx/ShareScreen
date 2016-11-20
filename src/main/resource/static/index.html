@@ -5,21 +5,22 @@
 <script type="text/javascript" src="./jquery.js"></script>
 <script type="text/javascript">
 	$(function() {
-		var ws = new WebSocket("ws://localhost:18080/screens");
+		var ws = new WebSocket("ws://" + location.host + "/screens");
 		ws.onopen = function() {
 		};
 		ws.onclose = function() {
 		};
+		
+		var image = $("#screen");
 		ws.onmessage = function(response) {
 			var url = URL.createObjectURL(new Blob([response.data], {
 				type : "image/png"
 			}));
-			var image = new Image();
 			image.onload = function() {
+				 //ctx.drawImage(image, 0, 0, window.parent.screen.width, window.parent.screen.height);
 				URL.revokeObjectURL(url);
 			};
-			image.src = url;
-			$("#image").html(image);
+			image.attr('src', url);
 		};
 		ws.onerror = function(event) {
 			console.log(event);
@@ -30,6 +31,6 @@
 </script>
 </head>
 <body>
-	<div id="image"></div>
+	<image id="screen"></image>
 </body>
 </html>

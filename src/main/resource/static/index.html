@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="./jquery.js"></script>
+<script type="text/javascript">
+	$(function() {
+		var ws = new WebSocket("ws://" + location.host + "/screens");
+		ws.onopen = function() {
+		};
+		ws.onclose = function() {
+		};
+		
+		var image = $("#screen");
+		ws.onmessage = function(response) {
+			var url = URL.createObjectURL(new Blob([response.data], {
+				type : "image/png"
+			}));
+			image.onload = function() {
+				 //ctx.drawImage(image, 0, 0, window.parent.screen.width, window.parent.screen.height);
+				URL.revokeObjectURL(url);
+			};
+			image.attr('src', url);
+		};
+		ws.onerror = function(event) {
+			console.log(event);
+			console.log("エラーが発生しました:" + event);
+			alert("エラーが発生しました:" + event);
+		};
+	});
+</script>
+</head>
+<body>
+	<image id="screen"></image>
+</body>
+</html>

@@ -50,8 +50,7 @@ public class WebSocketHandler extends BinaryWebSocketHandler {
    */
   @Scheduled(fixedDelayString = "${screenshot.interval}")
   public void sendImage() throws Exception {
-    byte[] image = imageService.screenShot();
-    BinaryMessage message = new BinaryMessage(image);
+    BinaryMessage message = new BinaryMessage(imageService.screenShot());
     for (Map.Entry<String, WebSocketSession> e : sessions.entrySet()) {
       e.getValue().sendMessage(message);
     }

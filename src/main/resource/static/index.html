@@ -17,7 +17,6 @@
 				type : "image/png"
 			}));
 			image.onload = function() {
-				 //ctx.drawImage(image, 0, 0, window.parent.screen.width, window.parent.screen.height);
 				URL.revokeObjectURL(url);
 			};
 			image.attr('src', url);

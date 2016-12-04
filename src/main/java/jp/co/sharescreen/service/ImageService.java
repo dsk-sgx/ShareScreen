@@ -1,4 +1,4 @@
-package jp.co.sharescreen;
+package jp.co.sharescreen.service;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -19,7 +19,7 @@ public class ImageService {
    * 
    * @return スクリーンショットのバイト配列
    */
-  byte[] screenShot() throws Exception {
+  public byte[] screenShot() throws Exception {
     Robot robot = new Robot();
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     BufferedImage image = robot.createScreenCapture(new Rectangle(0, 0, screenSize.width, screenSize.height));

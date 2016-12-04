@@ -1,32 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html charset=UTF-8">
 <script type="text/javascript" src="./jquery.js"></script>
 <script type="text/javascript">
 	$(function() {
-		var ws = new WebSocket("ws://" + location.host + "/screens");
+		var image = $("#screen")
+		var ws = new WebSocket("ws://" + location.host + "/screens")
 		ws.onopen = function() {
-		};
+		}
 		ws.onclose = function() {
-		};
-		
-		var image = $("#screen");
+		}
 		ws.onmessage = function(response) {
 			var url = URL.createObjectURL(new Blob([response.data], {
 				type : "image/png"
-			}));
+			}))
 			image.onload = function() {
-				URL.revokeObjectURL(url);
-			};
-			image.attr('src', url);
-		};
+				URL.revokeObjectURL(url)
+			}
+			image.attr('src', url)
+		}
 		ws.onerror = function(event) {
-			console.log(event);
-			console.log("エラーが発生しました:" + event);
-			alert("エラーが発生しました:" + event);
-		};
-	});
+			console.log(event)
+			console.log("connection error:" + event)
+
+		}
+
+		var sendOperation = function(event) {
+			ws.send(toJson(event))
+		}
+		
+		var toJson = function(Object obj) {
+			var cache = []
+			var result = JSON.stringify(event, function(key, value) {
+			    if (typeof value === 'object' && value !== null) {
+			        if (cache.indexOf(value) !== -1) {
+			            return
+			        }
+			        cache.push(value)
+			    }
+			    return value
+			})
+			cache = null
+			return result
+		}
+		$(image).click(function(e) {
+			sendOperation(e)
+		})
+		$(image).contextmenu(function(e) {
+			sendOperation(e)
+			return false
+		})
+})
 </script>
 </head>
 <body>

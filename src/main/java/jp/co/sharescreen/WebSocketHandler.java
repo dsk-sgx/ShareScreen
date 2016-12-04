@@ -8,8 +8,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jp.co.sharescreen.dto.ClientEventDto;
+import jp.co.sharescreen.service.ImageService;
+import jp.co.sharescreen.service.OperationService;
 
 @Service
 public class WebSocketHandler extends BinaryWebSocketHandler {
@@ -18,6 +25,9 @@ public class WebSocketHandler extends BinaryWebSocketHandler {
 
   @Autowired
   ImageService imageService;
+
+  @Autowired
+  OperationService operationService;
 
   /**
    * 接続が確立したセッションをプールします。
@@ -41,6 +51,15 @@ public class WebSocketHandler extends BinaryWebSocketHandler {
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
     sessions.remove(session.getId());
+  }
+
+  /**
+   * クライアントで実行した操作を、サーバで実行します。<br>
+   */
+  @Override
+  public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+    ClientEventDto event = new ObjectMapper().readValue((String)message.getPayload(), ClientEventDto.class);
+    operationService.execute(event);
   }
 
   /**

@@ -23,16 +23,15 @@
 		ws.onerror = function(event) {
 			console.log(event)
 			console.log("connection error:" + event)
-
 		}
 
 		var sendOperation = function(event) {
-			ws.send(toJson(event))
+			ws.send(toJson(event));
 		}
 		
-		var toJson = function(Object obj) {
+		var toJson = function(value){
 			var cache = []
-			var result = JSON.stringify(event, function(key, value) {
+			var result = JSON.stringify(value, function(key, value) {
 			    if (typeof value === 'object' && value !== null) {
 			        if (cache.indexOf(value) !== -1) {
 			            return

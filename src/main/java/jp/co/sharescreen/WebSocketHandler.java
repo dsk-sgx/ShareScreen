@@ -1,6 +1,10 @@
 package jp.co.sharescreen;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +25,7 @@ import jp.co.sharescreen.service.OperationService;
 @Service
 public class WebSocketHandler extends BinaryWebSocketHandler {
 
-  private static final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<String, WebSocketSession>();
+  private static final Map<Integer, List<WebSocketSession>> sessions = new ConcurrentHashMap<Integer, List<WebSocketSession>>();
 
   @Autowired
   ImageService imageService;
@@ -37,7 +41,13 @@ public class WebSocketHandler extends BinaryWebSocketHandler {
    */
   @Override
   public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-    sessions.put(session.getId(), session);
+    Integer level = getScreenLevel(session.getUri().getPath());
+    List<WebSocketSession> list = sessions.get(level);
+    if (list == null) {
+      list = new ArrayList<>();
+      sessions.put(level, list);
+    }
+    list.add(session);
     sendImage();
   }
 
@@ -50,7 +60,7 @@ public class WebSocketHandler extends BinaryWebSocketHandler {
    */
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-    sessions.remove(session.getId());
+    sessions.get(getScreenLevel(session.getUri().getPath())).removeIf(e -> e.equals(session));
   }
 
   /**
@@ -69,9 +79,33 @@ public class WebSocketHandler extends BinaryWebSocketHandler {
    */
   @Scheduled(fixedDelayString = "${screenshot.interval}")
   public synchronized void sendImage() throws Exception {
-    final BinaryMessage message = new BinaryMessage(imageService.screenShot());
-    for (Map.Entry<String, WebSocketSession> e : sessions.entrySet()) {
-      e.getValue().sendMessage(message);
-    }
+    long start = System.currentTimeMillis();
+    Set<Integer> levels = sessions.keySet();
+    Integer maxLevel = levels.stream().max(Comparator.naturalOrder()).get();
+    levels.forEach(level -> {
+      new Thread(() -> {
+        final BinaryMessage message = new BinaryMessage(imageService.screenShot(level, maxLevel));
+        sessions.get(level).parallelStream().forEach((session) -> {
+          try {
+            session.sendMessage(message);
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        });
+        return;
+      }).start();
+    });
+    System.out.println("END:" + (System.currentTimeMillis() - start));
+
+  }
+
+  /**
+   * URLからスクリーンの階層を取得します。
+   * 
+   * @param path
+   * @return
+   */
+  public Integer getScreenLevel(String path) {
+    return Integer.parseInt(path.substring(path.lastIndexOf("/") + 1));
   }
 }

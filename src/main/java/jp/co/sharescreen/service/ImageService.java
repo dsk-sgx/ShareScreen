@@ -14,17 +14,26 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImageService {
 
+  private static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
+
   /**
    * スクリーンショットを取得し、バイナリデータを返します。<br>
    * 
+   * @param level スクリーンの階層（1以上の整数）
    * @return スクリーンショットのバイト配列
    */
-  public byte[] screenShot() throws Exception {
-    Robot robot = new Robot();
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    BufferedImage image = robot.createScreenCapture(new Rectangle(0, 0, screenSize.width, screenSize.height));
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    ImageIO.write(image, "png", out);
-    return out.toByteArray();
+  public byte[] screenShot(Integer level, Integer max) {
+    try {
+      Robot robot = new Robot();
+      int height = SCREEN_SIZE.height / max;
+      int start = height * (level - 1);
+
+      BufferedImage image = robot.createScreenCapture(new Rectangle(0, start, SCREEN_SIZE.width, height));
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      ImageIO.write(image, "png", out);
+      return out.toByteArray();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }

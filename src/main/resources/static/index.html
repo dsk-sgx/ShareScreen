@@ -5,40 +5,46 @@
 <script type="text/javascript" src="./jquery.js"></script>
 <script type="text/javascript">
 	$(function() {
-		var image = $("#screen")
-		var ws = new WebSocket("ws://" + location.host + "/screens")
-		ws.onopen = function() {
-		}
-		ws.onclose = function() {
-		}
-		ws.onmessage = function(response) {
-			var url = URL.createObjectURL(new Blob([response.data], {
-				type : "image/png"
-			}))
-			image.onload = function() {
-				URL.revokeObjectURL(url)
+		for (i = 1; i <= 4; i++) {
+			var ws = new WebSocket("ws://" + location.host + "/screens/" + i)
+			ws.onopen = function() {
 			}
-			image.attr('src', url)
-		}
-		ws.onerror = function(event) {
-			console.log(event)
-			console.log("connection error:" + event)
+			ws.onclose = function() {
+			}
+			ws.onmessage = function(response) {
+				var url = response.srcElement.url
+				var level = url.substring(url.lastIndexOf('/') + 1);
+				var image = $("#screen" + level)
+				console.log(level)
+				var url = URL.createObjectURL(new Blob([ response.data ], {
+					type : "image/png"
+				}))
+				image.onload = function() {
+					URL.revokeObjectURL(url)
+				}
+				image.attr('src', url)
+			}
+			ws.onerror = function(event) {
+				console.log(event)
+				console.log("connection error:" + event)
+			}
 		}
 
 		var sendOperation = function(event) {
 			ws.send(toJson(event));
 		}
-		
-		var toJson = function(value){
+
+		var toJson = function(value) {
 			var cache = []
 			var result = JSON.stringify(value, function(key, value) {
-			    if (typeof value === 'object' && value !== null) {
-			        if (cache.indexOf(value) !== -1) {
-			            return
-			        }
-			        cache.push(value)
-			    }
-			    return value
+				if (typeof value === 'object' && value !== null) {
+					if (cache.indexOf(value) !== -1) {
+						return
+
+					}
+					cache.push(value)
+				}
+				return value
 			})
 			cache = null
 			return result
@@ -50,10 +56,13 @@
 			sendOperation(e)
 			return false
 		})
-})
+	})
 </script>
 </head>
 <body>
-	<image id="screen"></image>
+	<image id="screen1"></image>
+	<image id="screen2"></image>
+	<image id="screen3"></image>
+	<image id="screen4"></image>
 </body>
 </html>

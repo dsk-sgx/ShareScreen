@@ -12,6 +12,6 @@ public class ApplicationConfig implements WebSocketConfigurer {
   WebSocketHandler webSocketHandler;
 
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-    registry.addHandler(webSocketHandler, "/screens/*");
+    registry.addHandler(webSocketHandler, "/screens/*/*");
   }
 }

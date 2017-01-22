@@ -5,8 +5,9 @@
 <script type="text/javascript" src="./jquery.js"></script>
 <script type="text/javascript">
 	$(function() {
-		for (i = 1; i <= 4; i++) {
-			var ws = new WebSocket("ws://" + location.host + "/screens/" + i)
+		var maxLevel = 4
+		for (i = 1; i <= maxLevel; i++) {
+			var ws = new WebSocket("ws://" + location.host + "/screens/" + maxLevel + '/' + i)
 			ws.onopen = function() {
 			}
 			ws.onclose = function() {
@@ -49,20 +50,25 @@
 			cache = null
 			return result
 		}
-		$(image).click(function(e) {
+		$('body').click(function(e) {
 			sendOperation(e)
 		})
-		$(image).contextmenu(function(e) {
+		$('body').contextmenu(function(e) {
 			sendOperation(e)
 			return false
 		})
 	})
 </script>
+<style type="text/css">
+  img {
+  	margin-top:-2px;
+  }
+</style>
 </head>
 <body>
-	<image id="screen1"></image>
-	<image id="screen2"></image>
-	<image id="screen3"></image>
-	<image id="screen4"></image>
+	<img id="screen1"></img>
+	<img id="screen2"></img>
+	<img id="screen3"></img>
+	<img id="screen4"></img>
 </body>
 </html>
